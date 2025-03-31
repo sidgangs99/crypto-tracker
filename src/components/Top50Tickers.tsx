@@ -21,7 +21,7 @@ const formatPrice = (
       style: "currency",
       currency: selectedCurrency,
       minimumFractionDigits: 2,
-      maximumFractionDigits: symbol === "USDT" ? 4 : 8,
+      maximumFractionDigits: price > 6 ? 2 : 4,
     }
   ).format(price);
 };
