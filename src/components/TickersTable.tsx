@@ -30,7 +30,7 @@ export function TickersTable({ calculatePrice }: Top50TickersProps) {
       <div className="space-y-6">
         <div className="border rounded-lg overflow-hidden">
           <table className="w-full">
-            <thead className="bg-gray-100 dark:bg-gray-800">
+            <thead className="bg-gray-100 dark:bg-neutral-800">
               <tr>
                 <th className="px-4 py-2 text-left">Symbol</th>
                 <th className="px-4 py-2 text-right">Price</th>
@@ -47,7 +47,7 @@ export function TickersTable({ calculatePrice }: Top50TickersProps) {
                 return (
                   <tr
                     key={ticker.symbol}
-                    className="border-t hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
+                    className="border-t hover:bg-gray-50 dark:hover:bg-neutral-900 cursor-pointer"
                     onClick={() => setSelectedTicker(ticker)}
                   >
                     <td className="px-4 py-2 flex items-center gap-2">

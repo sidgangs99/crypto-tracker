@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ModeToggle } from "@/components/ui/toggleMode";
 import useDynamicPricing from "@/hooks/useDynamicPricing";
 import { EXCHANGE_CURRENCIES } from "@/lib/constants";
 import { CurrencyCode } from "@/types/currency";
@@ -18,7 +19,7 @@ export default function Home() {
   return (
     <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Track Your Assets 💰</h1>
+        <h1 className="text-4xl font-bold">Track Your Assets 💰</h1>
 
         <div className="flex items-center gap-2">
           <Select
@@ -38,6 +39,7 @@ export default function Home() {
               ))}
             </SelectContent>
           </Select>
+          <ModeToggle />
         </div>
       </div>
 
