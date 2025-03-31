@@ -2,18 +2,39 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBinance } from "@/hooks/useBinance";
+import { CURRENCY_TO_COUNTRY_CODE } from "@/lib/constants";
+import { CurrencyCode } from "@/types/currency";
 
-const formatPrice = (priceStr: string, symbol: string) => {
-  const price = parseFloat(priceStr);
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: symbol === "USDT" ? 4 : 8,
-  }).format(price);
+// Assuming conversion rate is 0.1%
+const CONVERSION_RATE_FEE = 0.999;
+
+const formatPrice = (
+  priceStr: string,
+  symbol: string,
+  exchangeRate: number,
+  selectedCurrency: CurrencyCode
+) => {
+  const price = parseFloat(priceStr) * exchangeRate * CONVERSION_RATE_FEE;
+  return new Intl.NumberFormat(
+    `en-${CURRENCY_TO_COUNTRY_CODE[selectedCurrency]?.countryCode}`,
+    {
+      style: "currency",
+      currency: selectedCurrency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: symbol === "USDT" ? 4 : 8,
+    }
+  ).format(price);
 };
 
-export function Top50Tickers() {
+interface Top50TickersProps {
+  selectedCurrency: CurrencyCode;
+  exchangeRate: number;
+}
+
+export function Top50Tickers({
+  selectedCurrency,
+  exchangeRate,
+}: Top50TickersProps) {
   const { tickers, isLoading, coins } = useBinance();
 
   if (isLoading) {
@@ -46,7 +67,12 @@ export function Top50Tickers() {
               <tr key={ticker.symbol} className="border-t">
                 <td className="px-4 py-2">{coin.name}</td>
                 <td className="px-4 py-2 text-right font-mono">
-                  {formatPrice(ticker.lastPrice, ticker.symbol)}
+                  {formatPrice(
+                    ticker.lastPrice,
+                    ticker.symbol,
+                    exchangeRate,
+                    selectedCurrency
+                  )}
                 </td>
               </tr>
             );
