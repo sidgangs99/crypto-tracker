@@ -2,37 +2,18 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBinance } from "@/hooks/useBinance";
-import { CONVERSION_RATE_FEE, CURRENCY_TO_COUNTRY_CODE } from "@/lib/constants";
-import { CurrencyCode } from "@/types/currency";
+import { Ticker } from "@/types/binance";
 import Image from "next/image";
-
-const formatPrice = (
-  priceStr: string,
-  exchangeRate: number,
-  selectedCurrency: CurrencyCode
-) => {
-  const price = parseFloat(priceStr) * exchangeRate * CONVERSION_RATE_FEE;
-  return new Intl.NumberFormat(
-    `en-${CURRENCY_TO_COUNTRY_CODE[selectedCurrency]?.countryCode}`,
-    {
-      style: "currency",
-      currency: selectedCurrency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: price > 6 ? 2 : 4,
-    }
-  ).format(price);
-};
+import { useState } from "react";
+import { TickerDetailsDialog } from "./TickerDetailsDialog";
 
 interface Top50TickersProps {
-  selectedCurrency: CurrencyCode;
-  exchangeRate: number;
+  calculatePrice: (price: string) => string;
 }
 
-export function TickersTable({
-  selectedCurrency,
-  exchangeRate,
-}: Top50TickersProps) {
+export function TickersTable({ calculatePrice }: Top50TickersProps) {
   const { tickers, isLoading, coins } = useBinance();
+  const [selectedTicker, setSelectedTicker] = useState<null | Ticker>(null);
 
   if (isLoading) {
     return (
@@ -66,7 +47,8 @@ export function TickersTable({
                 return (
                   <tr
                     key={ticker.symbol}
-                    className="border-t hover:bg-gray-50 dark:hover:bg-gray-800 cursor-default"
+                    className="border-t hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
+                    onClick={() => setSelectedTicker(ticker)}
                   >
                     <td className="px-4 py-2 flex items-center gap-2">
                       <Image
@@ -79,11 +61,7 @@ export function TickersTable({
                       <span>{coin.name}</span>
                     </td>
                     <td className="px-4 py-2 text-right font-mono">
-                      {formatPrice(
-                        ticker.close,
-                        exchangeRate,
-                        selectedCurrency
-                      )}
+                      {calculatePrice(ticker.close)}
                     </td>
                     <td
                       className={`px-4 py-2 text-right font-mono ${
@@ -101,6 +79,13 @@ export function TickersTable({
           </table>
         </div>
       </div>
+      {selectedTicker && (
+        <TickerDetailsDialog
+          ticker={selectedTicker}
+          onClose={() => setSelectedTicker(null)}
+          calculatePrice={calculatePrice}
+        />
+      )}
     </>
   );
 }

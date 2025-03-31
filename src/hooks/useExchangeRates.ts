@@ -23,7 +23,7 @@ function useExchangeRates() {
     return 1;
   };
 
-  return { getExchangeRate, exchangeRates };
+  return { getExchangeRate };
 }
 
 export default useExchangeRates;

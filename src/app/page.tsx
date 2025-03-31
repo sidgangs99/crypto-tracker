@@ -8,21 +8,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import useExchangeRates from "@/hooks/useExchangeRates";
+import useDynamicPricing from "@/hooks/useDynamicPricing";
 import { EXCHANGE_CURRENCIES } from "@/lib/constants";
 import { CurrencyCode } from "@/types/currency";
-import { useEffect, useState } from "react";
 
 export default function Home() {
-  const { getExchangeRate } = useExchangeRates();
-  const [exchangeRate, setExchangeRate] = useState(1);
-  const [currency, setCurrency] = useState<CurrencyCode>(
-    EXCHANGE_CURRENCIES[0]
-  );
-
-  useEffect(() => {
-    setExchangeRate(getExchangeRate(currency));
-  }, [currency, getExchangeRate]);
+  const { currency, setCurrency, calculatePrice } = useDynamicPricing();
 
   return (
     <div className="container mx-auto py-8">
@@ -50,7 +41,7 @@ export default function Home() {
         </div>
       </div>
 
-      <TickersTable selectedCurrency={currency} exchangeRate={exchangeRate} />
+      <TickersTable calculatePrice={calculatePrice} />
     </div>
   );
 }
