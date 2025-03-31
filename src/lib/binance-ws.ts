@@ -1,14 +1,13 @@
 import {
-  BinanceTicker,
   BinanceWebSocketError,
-  CoinGeckoCoin,
-  MiniTicker,
+  MiniTickerEvent,
+  MiniTickerSocketEvent,
+  Ticker,
   TickerCallback,
 } from "@/types/binance";
 import axios from "axios";
 import { DefaultLogger, WebsocketClient } from "binance";
 import { TOP_COINS } from "./api";
-import { formatNumber } from "./helper";
 
 export class BinancePriceTracker {
   private wsClient: WebsocketClient;
@@ -86,28 +85,32 @@ export class BinancePriceTracker {
     }
   }
 
-  private processTickers(tickers: BinanceTicker[]) {
+  private processTickers(tickers: MiniTickerSocketEvent[]) {
     const updates = tickers
-      .filter((t) => this.trackedSymbols.has(t.symbol))
-      .map((t) => this.formatTicker(t));
+      .filter((ticker) => this.trackedSymbols.has(ticker.symbol))
+      .map((ticker) => this.formatTicker(ticker));
 
     if (updates.length > 0) this.notifySubscribers(updates);
   }
 
-  private formatTicker(ticker: BinanceTicker): MiniTicker {
+  private formatTicker(ticker: MiniTickerSocketEvent): MiniTickerEvent {
     const marketCap = this.marketCaps[ticker.symbol]
-      ? (this.marketCaps[ticker.s] * parseFloat(ticker.close)).toString()
+      ? (this.marketCaps[ticker.symbol] * ticker.close).toString()
       : "0";
 
+    const priceChange = ticker.close - ticker.open;
+    const percentChange = (priceChange / ticker.open) * 100;
     return {
+      ...ticker,
       symbol: ticker.symbol,
-      lastPrice: formatNumber(ticker.close, 8),
-      quoteVolume: formatNumber(ticker.quoteAssetVolume, 2),
+      quoteVolume: ticker.baseAssetVolume,
+      priceChangePercent: percentChange.toFixed(2) + "%",
       marketCap,
+      lastUpdated: ticker.eventTime,
     };
   }
 
-  private notifySubscribers(tickers: MiniTicker[]) {
+  private notifySubscribers(tickers: MiniTickerEvent[]) {
     this.callbacks.forEach((cb) => {
       try {
         cb(tickers);
@@ -143,36 +146,14 @@ export class BinancePriceTracker {
     const { data } = await axios.get(
       `${TOP_COINS}?limit=${this.topCoinsLimit}`
     );
-    const { cgCoins, bnTickers } = data;
-
-    this.trackedSymbols = new Set(
-      cgCoins.map((coin: CoinGeckoCoin) => {
-        const symbol = `${coin.symbol.toUpperCase()}USDT`;
-        this.marketCaps[symbol] = coin.circulating_supply;
-        return symbol;
-      })
-    );
-
-    cgCoins.forEach((coin: CoinGeckoCoin) => this.coins.set(coin.symbol, coin));
+    const coins: Ticker[] = data.data;
+    coins.forEach((coin: Ticker) => {
+      this.coins.set(coin.symbol, coin);
+      this.trackedSymbols.add(coin.binanceSymbol);
+    });
 
     this.resubscribe();
-    return cgCoins.map((coin: CoinGeckoCoin) =>
-      this.createCoinTicker(coin, bnTickers)
-    );
-  }
-
-  private createCoinTicker(coin: CoinGeckoCoin, bnTickers: MiniTicker[]) {
-    const symbol = `${coin.symbol.toUpperCase()}USDT`;
-    const bnTicker: MiniTicker | undefined = bnTickers.find(
-      (t: MiniTicker) => t.symbol === symbol
-    );
-
-    return {
-      symbol,
-      lastPrice: bnTicker?.lastPrice || "0",
-      quoteVolume: bnTicker?.quoteVolume || "0",
-      marketCap: coin.market_cap.toString(),
-    };
+    return coins;
   }
 
   public subscribe(callback: TickerCallback): () => void {

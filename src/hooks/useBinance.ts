@@ -1,10 +1,6 @@
 import { binancePriceTracker } from "@/lib/binance-ws";
+import { MiniTickerEvent, Ticker } from "@/types/binance";
 import { useEffect, useMemo, useState } from "react";
-
-interface Ticker {
-  symbol: string;
-  lastPrice: string;
-}
 
 export const useBinance = () => {
   const [tickers, setTickers] = useState<Ticker[]>([]);
@@ -25,13 +21,23 @@ export const useBinance = () => {
 
     loadData();
 
-    const handleUpdate = (updatedTickers: Ticker[]) => {
-      setTickers((current) =>
-        current.map((ticker) => {
+    const handleUpdate = (updatedTickers: MiniTickerEvent[]) => {
+      setTickers((current: Ticker[]) =>
+        current.map((ticker: Ticker) => {
           const updated = updatedTickers.find(
-            (t) => t.symbol === ticker.symbol
+            (t) => t.symbol === ticker.binanceSymbol
           );
-          return updated || ticker;
+
+          const updatedTicker: Ticker = {
+            ...ticker,
+            close: updated?.close || ticker?.close,
+            priceChangePercent:
+              updated?.priceChangePercent || ticker?.priceChangePercent,
+            quoteVolume: updated?.quoteVolume || ticker?.quoteVolume,
+            lastUpdated: updated?.lastUpdated || ticker?.lastUpdated,
+          };
+
+          return updatedTicker;
         })
       );
     };

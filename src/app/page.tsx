@@ -1,6 +1,6 @@
 "use client";
 
-import { Top50Tickers } from "@/components/Top50Tickers";
+import { TickersTable } from "@/components/TickersTable";
 import {
   Select,
   SelectContent,
@@ -9,15 +9,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import useExchangeRates from "@/hooks/useExchangeRates";
-import { ExchangeCurrencies } from "@/lib/constants";
+import { EXCHANGE_CURRENCIES } from "@/lib/constants";
 import { CurrencyCode } from "@/types/currency";
 import { useEffect, useState } from "react";
 
 export default function Home() {
   const { getExchangeRate } = useExchangeRates();
-
   const [exchangeRate, setExchangeRate] = useState(1);
-  const [currency, setCurrency] = useState<CurrencyCode>(ExchangeCurrencies[0]);
+  const [currency, setCurrency] = useState<CurrencyCode>(
+    EXCHANGE_CURRENCIES[0]
+  );
 
   useEffect(() => {
     setExchangeRate(getExchangeRate(currency));
@@ -26,9 +27,7 @@ export default function Home() {
   return (
     <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">
-          Top 50 Cryptocurrencies (Binance)
-        </h1>
+        <h1 className="text-2xl font-bold">Track Your Assets 💰</h1>
 
         <div className="flex items-center gap-2">
           <Select
@@ -41,7 +40,7 @@ export default function Home() {
               </div>
             </SelectTrigger>
             <SelectContent>
-              {ExchangeCurrencies.map((currency) => (
+              {EXCHANGE_CURRENCIES.map((currency) => (
                 <SelectItem key={currency} value={currency}>
                   {currency}
                 </SelectItem>
@@ -51,7 +50,7 @@ export default function Home() {
         </div>
       </div>
 
-      <Top50Tickers selectedCurrency={currency} exchangeRate={exchangeRate} />
+      <TickersTable selectedCurrency={currency} exchangeRate={exchangeRate} />
     </div>
   );
 }

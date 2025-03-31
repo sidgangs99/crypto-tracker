@@ -12,10 +12,12 @@ export const CURRENCY_TO_COUNTRY_CODE: Record<CurrencyCode, any> = {
   GBP: { countryCode: "GB" },
 };
 
-export const ExchangeCurrencies: CurrencyCode[] = [
+export const EXCHANGE_CURRENCIES: CurrencyCode[] = [
   "USD",
   "INR",
   "EUR",
   "CHF",
   "GBP",
 ];
+
+export const CONVERSION_RATE_FEE = 0.999;
