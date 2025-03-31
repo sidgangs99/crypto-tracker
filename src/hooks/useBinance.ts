@@ -4,17 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 interface Ticker {
   symbol: string;
   lastPrice: string;
-  priceChangePercent: string;
 }
 
 export const useBinance = () => {
   const [tickers, setTickers] = useState<Ticker[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const coins = useMemo(
-    () => binancePriceTracker.getCoins(),
-    [binancePriceTracker.getCoins()]
-  );
+  const coins = useMemo(() => binancePriceTracker.getCoins(), []);
 
   useEffect(() => {
     const loadData = async () => {

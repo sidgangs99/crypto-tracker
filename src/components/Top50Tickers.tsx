@@ -37,8 +37,6 @@ export function Top50Tickers() {
         </thead>
         <tbody>
           {tickers.map((ticker) => {
-            const change = parseFloat(ticker.priceChangePercent);
-            const isPositive = change >= 0;
             const extractedSymbolKey = ticker.symbol
               .replace("USDT", "")
               .toLowerCase();

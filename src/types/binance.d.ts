@@ -3,7 +3,6 @@ import { WsKey } from "binance";
 export interface MiniTicker {
   symbol: string;
   lastPrice: string;
-  priceChangePercent: string;
   quoteVolume: string;
   marketCap?: string;
 }

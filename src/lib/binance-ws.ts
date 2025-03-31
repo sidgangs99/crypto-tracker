@@ -102,7 +102,6 @@ export class BinancePriceTracker {
     return {
       symbol: ticker.symbol,
       lastPrice: formatNumber(ticker.close, 8),
-      priceChangePercent: formatNumber(ticker.P, 2),
       quoteVolume: formatNumber(ticker.quoteAssetVolume, 2),
       marketCap,
     };
@@ -162,15 +161,16 @@ export class BinancePriceTracker {
     );
   }
 
-  private createCoinTicker(coin: CoinGeckoCoin, bnTickers: any[]) {
+  private createCoinTicker(coin: CoinGeckoCoin, bnTickers: MiniTicker[]) {
     const symbol = `${coin.symbol.toUpperCase()}USDT`;
-    const bnTicker = bnTickers.find((t: any) => t.symbol === symbol) || {};
+    const bnTicker: MiniTicker | undefined = bnTickers.find(
+      (t: MiniTicker) => t.symbol === symbol
+    );
 
     return {
       symbol,
-      lastPrice: bnTicker.lastPrice || "0",
-      priceChangePercent: bnTicker.priceChangePercent || "0",
-      quoteVolume: bnTicker.quoteVolume || "0",
+      lastPrice: bnTicker?.lastPrice || "0",
+      quoteVolume: bnTicker?.quoteVolume || "0",
       marketCap: coin.market_cap.toString(),
     };
   }

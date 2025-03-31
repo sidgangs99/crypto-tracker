@@ -19,6 +19,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ cgCoins, bnTickers });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { error: "Failed to fetch top 50 coins" },
       { status: 500 }
