@@ -17,7 +17,7 @@ export async function GET(request: Request) {
     const { data } = await axios.get(`${COIN_GECKO_API}/search?query=${query}`);
 
     return NextResponse.json({
-      data: data.coins.slice(0, 10).map((coin) => ({
+      data: data.coins.slice(0, 10).map((coin: any) => ({
         symbol: coin.symbol,
         image: coin.thumb,
         name: coin.name,

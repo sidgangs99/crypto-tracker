@@ -128,7 +128,7 @@ export default function SearchCrypto({ calculatePrice }: any) {
 
             <CommandGroup heading="Powered by Sid 🚀">
               {Boolean(query.length) &&
-                results.map((crypto) => (
+                results.map((crypto: any) => (
                   <CommandItem
                     key={crypto?.id}
                     value={crypto?.id}
