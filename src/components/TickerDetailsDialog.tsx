@@ -4,10 +4,11 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogSkeleton,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Ticker } from "@/types/binance";
-import { ArrowDown, ArrowUp, BarChart2, Clock, DollarSign } from "lucide-react";
+import { ArrowDown, ArrowUp, BarChart2 } from "lucide-react";
 import Image from "next/image";
 import { Progress } from "./ui/progress";
 import { Separator } from "./ui/separator";
@@ -16,11 +17,16 @@ export function TickerDetailsDialog({
   ticker,
   onClose,
   calculatePrice,
+  isLoading = false,
 }: {
-  ticker: Ticker;
+  ticker: Ticker | null;
   onClose: () => void;
   calculatePrice: (price: string) => string;
+  isLoading?: boolean;
 }) {
+  if (!ticker) return null;
+  if (isLoading) return <DialogSkeleton onOpenChange={onClose} />;
+
   const isPositive = parseFloat(ticker.priceChangePercent) >= 0;
   const priceChange = parseFloat(ticker.priceChangePercent);
   const volume = parseFloat(ticker.volume24h);
@@ -86,46 +92,17 @@ export function TickerDetailsDialog({
                 24h Range
               </div>
               <div className="font-medium">
-                ${ticker.low24h.toLocaleString()} - $
-                {ticker.high24h.toLocaleString()}
+                {calculatePrice(ticker.low24h.toLocaleString())} -
+                {calculatePrice(ticker.high24h.toLocaleString())}
               </div>
             </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center text-sm text-muted-foreground">
-                <DollarSign className="h-4 w-4 mr-2" />
                 24h Volume
               </div>
-              <div className="font-medium">${volume.toLocaleString()}</div>
-            </div>
-          </div>
-
-          {/* Performance Metrics */}
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center text-sm text-muted-foreground">
-              <Clock className="h-4 w-4 mr-2" />
-              Recent Performance
-            </div>
-            <div className="flex gap-2">
-              <div
-                className={`flex-1 p-2 rounded text-center ${
-                  isPositive ? "bg-green-500/10" : "bg-red-500/10"
-                }`}
-              >
-                <div className="text-xs text-muted-foreground">1h</div>
-                <div
-                  className={`font-medium ${
-                    isPositive ? "text-green-500" : "text-red-500"
-                  }`}
-                >
-                  {priceChange.toFixed(2)}%
-                </div>
-              </div>
-              <div className="flex-1 p-2 rounded text-center bg-muted">
-                <div className="text-xs text-muted-foreground">24h</div>
-                <div className="font-medium">
-                  {ticker.priceChangePercentage24h?.toFixed(2) || "N/A"}%
-                </div>
+              <div className="font-medium">
+                {calculatePrice(volume.toLocaleString())}
               </div>
             </div>
           </div>

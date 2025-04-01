@@ -5,6 +5,7 @@ import { XIcon } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
+import { Skeleton } from "./skeleton";
 
 function Dialog({
   ...props
@@ -38,7 +39,7 @@ function DialogOverlay({
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/85",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
         className
       )}
       {...props}
@@ -121,6 +122,35 @@ function DialogDescription({
   );
 }
 
+function DialogSkeleton({ onOpenChange }: any) {
+  return (
+    <Dialog open={true} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md rounded-lg">
+        <DialogHeader>
+          <div className="flex items-center gap-4">
+            <div>
+              <DialogTitle className="text-left">
+                <Skeleton className="h-4 w-32" />
+              </DialogTitle>
+              <Skeleton className="h-3 w-24 mt-1" />
+            </div>
+          </div>
+        </DialogHeader>
+
+        <div className="flex flex-col gap-4">
+          {/* Price Section */}
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-6 w-24" />
+            <Skeleton className="h-5 w-16" />
+          </div>
+
+          <Skeleton className="h-20 w-full" />
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export {
   Dialog,
   DialogClose,
@@ -130,6 +160,7 @@ export {
   DialogHeader,
   DialogOverlay,
   DialogPortal,
+  DialogSkeleton,
   DialogTitle,
   DialogTrigger,
 };

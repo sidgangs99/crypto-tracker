@@ -1,18 +1,26 @@
 "use client";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { useBinance } from "@/hooks/useBinance";
 import { Ticker } from "@/types/binance";
 import Image from "next/image";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { TickerDetailsDialog } from "./TickerDetailsDialog";
 
 interface Top50TickersProps {
   calculatePrice: (price: string) => string;
+  tickers: Ticker[];
+  isLoading: boolean;
+  coins: Map<string, any>;
+  setHistory: Dispatch<SetStateAction<Ticker[]>>;
 }
 
-export function TickersTable({ calculatePrice }: Top50TickersProps) {
-  const { tickers, isLoading, coins } = useBinance();
+export function TickersTable({
+  calculatePrice,
+  coins,
+  isLoading,
+  tickers,
+  setHistory,
+}: Top50TickersProps) {
   const [selectedTicker, setSelectedTicker] = useState<null | Ticker>(null);
 
   if (isLoading) {
@@ -48,7 +56,10 @@ export function TickersTable({ calculatePrice }: Top50TickersProps) {
                   <tr
                     key={ticker.symbol}
                     className="border-t hover:bg-gray-50 dark:hover:bg-neutral-900 cursor-pointer"
-                    onClick={() => setSelectedTicker(ticker)}
+                    onClick={() => {
+                      setHistory((prev: Ticker[]) => [ticker, ...prev]);
+                      setSelectedTicker(ticker);
+                    }}
                   >
                     <td className="px-4 py-2 flex items-center gap-2">
                       <Image
@@ -79,13 +90,12 @@ export function TickersTable({ calculatePrice }: Top50TickersProps) {
           </table>
         </div>
       </div>
-      {selectedTicker && (
-        <TickerDetailsDialog
-          ticker={selectedTicker}
-          onClose={() => setSelectedTicker(null)}
-          calculatePrice={calculatePrice}
-        />
-      )}
+      <TickerDetailsDialog
+        ticker={selectedTicker}
+        onClose={() => setSelectedTicker(null)}
+        calculatePrice={calculatePrice}
+        isLoading={false}
+      />
     </>
   );
 }
