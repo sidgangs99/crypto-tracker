@@ -7,7 +7,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { TickerDetailsDialog } from "./TickerDetailsDialog";
 
 interface Top50TickersProps {
-  calculatePrice: (price: string) => string;
+  calculatePrice: (price: number) => string;
   tickers: Ticker[];
   isLoading: boolean;
   coins: Map<string, any>;

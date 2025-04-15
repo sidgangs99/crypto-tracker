@@ -15,9 +15,9 @@ function useDynamicPricing() {
     EXCHANGE_CURRENCIES[0]
   );
 
-  const calculatePrice = (priceStr: string) => {
+  const calculatePrice = (priceStr: number) => {
     const price =
-      parseFloat(priceStr) * getExchangeRate(currency) * CONVERSION_RATE_FEE;
+      priceStr * getExchangeRate(currency) * CONVERSION_RATE_FEE;
     return new Intl.NumberFormat(
       `en-${CURRENCY_TO_COUNTRY_CODE[currency]?.countryCode}`,
       {

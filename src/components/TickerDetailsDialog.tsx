@@ -21,7 +21,7 @@ export function TickerDetailsDialog({
 }: {
   ticker: Ticker | null;
   onClose: () => void;
-  calculatePrice: (price: string) => string;
+  calculatePrice: (price: number) => string;
   isLoading?: boolean;
 }) {
   if (!ticker) return null;
@@ -61,7 +61,7 @@ export function TickerDetailsDialog({
                 isPositive ? "text-green-500" : "text-red-500"
               )}
             >
-              {calculatePrice(String(ticker.close))}
+              {calculatePrice(ticker.close)}
             </span>
             <span
               className={`flex items-center ${
@@ -92,8 +92,8 @@ export function TickerDetailsDialog({
                 24h Range
               </div>
               <div className="font-medium">
-                {calculatePrice(ticker.low24h.toLocaleString())} -
-                {calculatePrice(ticker.high24h.toLocaleString())}
+                {calculatePrice(ticker.low24h)} -
+                {calculatePrice(ticker.high24h)}
               </div>
             </div>
 
@@ -102,7 +102,7 @@ export function TickerDetailsDialog({
                 24h Volume
               </div>
               <div className="font-medium">
-                {calculatePrice(volume.toLocaleString())}
+                {calculatePrice(volume).slice(1)}
               </div>
             </div>
           </div>
